@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import axiosInstance from "@/axios";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function EditUserForm({ id,name, age, place }) {
   let [newName, setName] = useState(name);
@@ -11,17 +13,31 @@ export default function EditUserForm({ id,name, age, place }) {
 
   
   const router = useRouter();
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const trimmedNewName = newName.trim();
+    const trimmedNewAge = newage.trim();
+    const trimmedNewPlace = newplace.trim();
+
+    if (!trimmedNewName || !trimmedNewAge || !trimmedNewPlace) {
+      toast.error("All fields are required.");
+      return;
+    }
+
+    const newAgeNum = Number(trimmedNewAge);
+    if (isNaN(newAgeNum)) {
+      toast.error("Please enter a valid age.");
+      return;
+    }
 
     try {
-      const res = await axios.put(
+      const res = await axiosInstance.put(
         `http://localhost:3000/user/${id}`,
         {
-          newName,
-          newage,
-          newplace,
+          newName: trimmedNewName,
+          newage: newAgeNum,
+          newplace: trimmedNewPlace,
         },
         {
           headers: {
@@ -31,6 +47,7 @@ export default function EditUserForm({ id,name, age, place }) {
       );
       router.refresh();
       router.push("/");
+      toast.success('Successfully edited')
     } catch (error) {
       console.log(error);
     }

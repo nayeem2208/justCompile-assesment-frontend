@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { toast } from 'react-hot-toast';
+import axiosInstance from "@/axios";
 
 
 function Page() {
@@ -17,21 +18,30 @@ function Page() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const trimmedId = id.trim();
+    const trimmedName = name.trim();
+    const trimmedAge = age.trim();
+    const trimmedPlace = place.trim();
 
-    if (!id || !name || !age || !place) {
-      alert("All fields are required.");
+    if (!trimmedId || !trimmedName || !trimmedAge || !trimmedPlace) {
+      toast.error("All fields are required.");
+      return;
+    }
+    const ageNum = Number(trimmedAge);
+    if (isNaN(ageNum)) {
+      toast.error("Please enter a valid age.");
       return;
     }
 
     try {
 
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         "http://localhost:3000/user/",
         {
-          id,
-          name,
-          age,
-          place,
+          id: trimmedId,
+          name: trimmedName,
+          age: trimmedAge,
+          place: trimmedPlace,
         },
         {
           headers: {
@@ -43,10 +53,13 @@ function Page() {
       if (res.status === 201) {
         router.refresh();
         router.push("/");
+        toast.success('Successfully added new user')
       } else {
+        
         console.error("Failed to add user");
       }
     } catch (error) {
+      toast.error("Failed to add user");
       console.error(error);
     }
   };

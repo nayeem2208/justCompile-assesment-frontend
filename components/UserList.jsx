@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { LuClipboardEdit } from "react-icons/lu";
 import RemoveBtn from "./RemoveBtn";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/axios";
+import toast, { Toaster } from "react-hot-toast";
 
 const UserList = () => {
   const router = useRouter();
@@ -14,16 +14,18 @@ const UserList = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axiosInstance.get("/", {
+      const res = await axiosInstance.get("http://localhost:3000/user/", {
         cache: "no-store",
       });
-      console.log(res, "res");
       setUserData(res.data);
+
     } catch (error) {
       console.error("Error loading user data: ", error);
     }
   };
 
+  let users=userData.sort((a,b)=>a.id-b.id)
+  console.log(users,'users')
   useEffect(() => {
     if (!adminInfo) {
       console.log("There is no adminInfo");
@@ -36,6 +38,7 @@ const UserList = () => {
 
   const handleUserDeleted = () => {
     fetchData();
+    toast.success('Successfully deleted')
   };
   
 
@@ -45,9 +48,9 @@ const UserList = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 ">
       <div className="flex justify-center my-4">
-      <h1 className="text-3xl font-bold">Users</h1></div>
+      <h1 className="text-3xl text-gray-700 font-bold">Users</h1></div>
       <table className="min-w-full bg-white border border-gray-300 shadow-sm">
         <thead>
           <tr>
@@ -60,8 +63,8 @@ const UserList = () => {
           </tr>
         </thead>
         <tbody>
-          {userData.map((user) => (
-            <tr key={user.id} className="border-b text-center">
+          {userData.map((user,index) => (
+            <tr key={user.id} className={`border-b text-center  hover:bg-slate-800 hover:text-emerald-400 `}>
               <td className="py-2 px-4">{user.id}</td>
               <td className="py-2 px-4">{user.name}</td>
               <td className="py-2 px-4">{user.age}</td>

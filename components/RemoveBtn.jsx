@@ -1,7 +1,7 @@
 "use client";
 import { MdOutlineDeleteOutline } from "react-icons/md"
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axiosInstance from "@/axios";
 
 function RemoveBtn({id,onUserDeleted }) {
   const router = useRouter();
@@ -10,7 +10,7 @@ function RemoveBtn({id,onUserDeleted }) {
     const confirmed = confirm("Are you sure?");
 
     if (confirmed) {
-      const res = await axios.delete(`http://localhost:3000/user/${id}`);
+      const res = await axiosInstance.delete(`http://localhost:3000/user/${id}`);
 
       if (res.status==200) {
         onUserDeleted();
